@@ -3,31 +3,16 @@ int colorR = 0;
 int colorG = 0;
 int colorB = 0;
 color clr = color(colorR, colorG, colorB);
-int lineSize = 3;
+int bolding = 3;
 int mode = 0;
-int colorPressed = 0;
+int saveFile = 0;
+int colorPick = 0;
+int mySwitch = 0;
+String str = "";
 
 void setup() {
   size(1500,1000);
   background(70);
-  fill(150);
-  noStroke();
-  rect(0,0,width,40);
-  rect(0,0,40,height);
-}
-
-void draw() {
-  UI();
-  println(colorR+","+colorG+","+colorB);
-  fill(clr);
-  rect(140, 5, 40, 30);
-  cp.render();
-}
-
-void UI() {
-  fill(70);
-  rect(0,0,1500,1000);
-  
   fill(150);
   noStroke();
   rect(0,0,width,40);
@@ -39,6 +24,11 @@ void UI() {
   rect(200,200,500,700);
   
   cp = new ColorPicker(1000, 200, 400, 400, 255);
+  
+  //font
+  PFont font;
+  font = loadFont("ComicSansMS-48.vlw");
+  textFont(font, 12);
   
   /*upper menu*/
   stroke(0);
@@ -63,10 +53,7 @@ void UI() {
   rect(85, 5, 30, 30);
   image(imageFile, 85, 5, 30, 30);
   
-  //PFont font;
-  //font = loadFont("BMDOHYEON_ttf.ttf");
-  //textFont(font, 16);
-  
+  //color
   String currentColor;
   currentColor = "color : ";
   text(currentColor, 190, 25);
@@ -85,14 +72,19 @@ void UI() {
   minusButton(254, 33, 12);
   plusButton(274, 7, 12);
   minusButton(274, 33, 12);
+  fill(clr);
+  rect(140, 5, 40, 30);
   
-  String thk;
-  thk= "thickness";
+  //thikness
+  String thick;
+  thick= "thickness";
   fill(255);
-  text(thk, 350, 25);
+  text(thick, 350, 25);
   rect(300, 5, 40, 30);
-  strokeWeight(lineSize);
+  strokeWeight(bolding);
   line(310, 20, 330, 20);
+  plusButton(415,20,20);
+  minusButton(440,20,20);
   
   /*left menu*/
   //pencil
@@ -121,20 +113,143 @@ void UI() {
   line(15, 190, 30, 190);
   line(30, 190, 30, 175);
   line(30, 175, 15, 175);
-  strokeWeight(2);
   
   //eraser
   PImage eraser;
   eraser = loadImage("eraser.png");
+  strokeWeight(1);
   rect(5, 205, 30, 30);
   image(eraser, 5, 205, 30, 30);
-  
 }
 
+void draw() {
+  
+  //save button
+  if(saveFile==1) {
+    stroke(1);
+    fill(100);
+    rect(600,400,400,200);
+    fill(255);
+    rect(980,400,20,20);
+    line(980,400,1000,420);
+    line(980,420,1000,400);
+    noStroke();
+    rect(750,485,150,20);
+    String save;
+    save = "Enter a file name: ";
+    textSize(15);
+    text(save, 620, 500);
+    stroke(1);
+    fill(255,255,0);
+    rect(780, 550, 40, 20);
+    String OK;
+    fill(0);
+    OK = "SAVE";
+    text(OK, 782, 565);
+    
+    //quit button
+    if(mousePressed && 980<=mouseX && mouseX<=1000 && 400<=mouseY && mouseY<=420) {
+      saveFile=0;
+      mySwitch=1;
+    }
+    
+    //save button
+    if(mousePressed && 780<=mouseX && mouseX<=820 && 550<=mouseY && mouseY<=570) {
+      saveFile=0;
+      mySwitch=1;
+      saveFrame(str + ".jpg");
+    }
+    //keyPressed here
+  }
+  if(saveFile==0 && mySwitch==1) {
+    mySwitch=0;
+    setup();
+  }
+  
+  //color button
+  if(colorPick==1) {
+    cp.render();
+    if(mousePressed && 1000<=mouseX && mouseX<=1400 && 200<=mouseY && mouseY<=400) {
+      colorPick=0;
+      //setup();
+    }
+  }
+  
+  /*mode*/
+  //pencil
+  if(mode==0) {
+    strokeWeight(bolding);
+    stroke(clr);
+  }
+  
+  //eraser
+  if(mode==4) {
+    strokeWeight(20);
+    stroke(255);
+  }
+}
 
+void keyPressed() {
+  if (saveFile==1 && mySwitch==0) {
+    if (key == BACKSPACE) {
+      str = "";
+      return;
+    }
+    str += key;
+    text(str, 800, 500);
+  }
+}
 
 void mouseReleased() {
+  //save
+  if(5<=mouseX && mouseX<=30 && 5<=mouseY && mouseY<=30) {
+    if(saveFile==0) {
+      saveFile=1;
+    }
+    else {
+      saveFile=0;
+    }
+  }
   
+  //color pick
+  if(140<=mouseX && mouseX<=180 && 5<=mouseY && mouseY<=35) {
+    if(colorPick==0) {
+      colorPick=1;
+    }
+    else {
+      colorPick=0;
+    }
+  }
+  
+  //thickness
+  if(405<=mouseX && mouseX<=425 && 10<=mouseY && mouseY<=30) {
+    bolding++;
+  }
+  if(430<=mouseX && mouseX<=450 && 10<=mouseY && mouseY<=30) {
+    bolding--;
+  }
+  
+  //mode
+  if(5<=mouseX && mouseX<=35 && 45<=mouseX && mouseX<=75) {
+    //pencil
+    mode=0;
+  }
+  if(5<=mouseX && mouseX<=35 && 85<=mouseY && mouseY<=115) {
+    //brush
+    mode=1;
+  }
+  if(5<=mouseX && mouseX<=35 && 125<=mouseY && mouseY<=155) {
+    //text
+    mode=2;
+  }
+  if(5<=mouseX && mouseX<=35 && 165<=mouseY && mouseY<=195) {
+    //figure
+    mode=3;
+  }
+  if(5<=mouseX && mouseX<=35 && 205<=mouseY && mouseY<=235) {
+    //eraser
+    mode=4;
+  }
 }
 
 void mouseClicked() {
@@ -160,6 +275,12 @@ void mouseClicked() {
   }
   if(268<mouseX && mouseX<280 && 27<mouseY && mouseY<39) {
     colorB--;
+  }
+}
+
+void mouseDragged() {
+  if (200<=mouseX && mouseX<=700 && 200<mouseY && mouseY<=900) {
+    line(pmouseX, pmouseY, mouseX, mouseY);
   }
 }
 
@@ -260,6 +381,7 @@ public class ColorPicker
     {
       c = get( mouseX, mouseY );
     }
+    clr = c;
     fill( c );
     rect( x, y+h+10, 20, 20 );
   }
