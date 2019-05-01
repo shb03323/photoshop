@@ -6,6 +6,7 @@ color clr = color(colorR, colorG, colorB);
 int bolding = 3;
 int mode = 0;
 int saveFile = 0;
+int getImage = 0;
 int colorPick = 0;
 int mySwitch = 0;
 String str = "";
@@ -166,8 +167,58 @@ void draw() {
     setup();
   }
   
+  //new page
+  if(mousePressed && 45<=mouseX && mouseX<=75 && 5<=mouseY && mouseY<=35) {
+    setup();
+  }
+  
+  //get image
+  if(getImage==1) {
+    stroke(1);
+    fill(100);
+    rect(600,400,400,200);
+    fill(255);
+    rect(980,400,20,20);
+    line(980,400,1000,420);
+    line(980,420,1000,400);
+    noStroke();
+    rect(780,485,150,20);
+    String imageGet;
+    imageGet = "Enter a image name: ";
+    textSize(15);
+    text(imageGet, 620, 500);
+    stroke(1);
+    fill(255,255,0);
+    rect(775, 548, 50, 20);
+    String load;
+    fill(0);
+    load = "LOAD";
+    text(load, 782, 565);
+    
+    //quit button
+    if(mousePressed && 980<=mouseX && mouseX<=1000 && 400<=mouseY && mouseY<=420) {
+      getImage=0;
+      setup();
+    }
+    
+    //load button
+    if(mousePressed && 775<=mouseX && mouseX<=825 && 548<=mouseY && mouseY<=568) {
+      getImage=0;
+      mySwitch=1;
+    }
+  }
+  if(getImage==0 && mySwitch==1) {
+    mySwitch=0;
+    setup();
+    PImage loadImage;
+    loadImage = loadImage(str);
+    image(loadImage, 200, 200);
+  }
+  
   //color button
   if(colorPick==1) {
+    stroke(0);
+    strokeWeight(1);
     cp.render();
     if(mousePressed && 1000<=mouseX && mouseX<=1400 && 200<=mouseY && mouseY<=400) {
       colorPick=0;
@@ -182,6 +233,16 @@ void draw() {
     stroke(clr);
   }
   
+  //brush
+  if(mode==1) {
+    strokeWeight(bolding);
+    stroke(clr);
+  }
+  
+  //text
+  if(mode==2) {
+    noStroke();
+  }
   //eraser
   if(mode==4) {
     strokeWeight(20);
@@ -190,6 +251,7 @@ void draw() {
 }
 
 void keyPressed() {
+  //save file name
   if (saveFile==1 && mySwitch==0) {
     if (key == BACKSPACE) {
       str = "";
@@ -198,16 +260,48 @@ void keyPressed() {
     str += key;
     text(str, 800, 500);
   }
+  
+  //get image file
+  if(getImage==1 && mySwitch==0) {
+    if(key == BACKSPACE) {
+      str = "";
+      return;
+    }
+    str += key;
+    text(str, 800, 500);
+  }
+  
+  //text mode
+  if(mode==2) {
+    String textInput;
+    textInput = "";
+    if(200<=mouseX && mouseX<=700 && 200<mouseY && mouseY<=900) {
+      textInput += key;
+      text(textInput, mouseX, mouseY);
+    }
+  }
 }
 
 void mouseReleased() {
   //save
-  if(5<=mouseX && mouseX<=30 && 5<=mouseY && mouseY<=30) {
+  if(5<=mouseX && mouseX<=35 && 5<=mouseY && mouseY<=35) {
     if(saveFile==0) {
+      strokeWeight(1);
       saveFile=1;
     }
     else {
       saveFile=0;
+    }
+  }
+  
+  //get image
+  if(85<=mouseX && mouseX<=115 && 5<=mouseY && mouseY<=35) {
+    if(getImage==0) {
+      strokeWeight(1);
+      getImage=1;
+    }
+    else {
+      getImage=0;
     }
   }
   
