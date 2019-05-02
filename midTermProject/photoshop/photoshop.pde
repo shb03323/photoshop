@@ -1,14 +1,19 @@
 ColorPicker cp;
+PGraphics pg1;
+PGraphics pg2;
+
 int colorR = 0;
 int colorG = 0;
 int colorB = 0;
 color clr = color(colorR, colorG, colorB);
 int bolding = 3;
+int brighting = 127;
 int mode = 0;
 int saveFile = 0;
 int getImage = 0;
 int colorPick = 0;
 int mySwitch = 0;
+int currentLayer = 2;
 String str = "";
 
 void setup() {
@@ -26,10 +31,12 @@ void setup() {
   
   cp = new ColorPicker(1000, 200, 400, 400, 255);
   
-  //font
-  PFont font;
-  font = loadFont("ComicSansMS-48.vlw");
-  textFont(font, 12);
+  pg1 = createGraphics(width,height);
+  pg2 = createGraphics(width,height);
+  
+  PFont font1;
+  font1 = loadFont("ComicSansMS-48.vlw");
+  textFont(font1, 12);
   
   /*upper menu*/
   stroke(0);
@@ -87,6 +94,16 @@ void setup() {
   plusButton(415,20,20);
   minusButton(440,20,20);
   
+  //brightness
+  String bright;
+  bright = "brightness";
+  fill(255);
+  text(bright, 520, 24);
+  tint(brighting);
+  rect(470, 5, 40, 30);
+  plusButton(595,20,20);
+  minusButton(620,20,20);
+  
   /*left menu*/
   //pencil
   PImage pencil;
@@ -121,10 +138,60 @@ void setup() {
   strokeWeight(1);
   rect(5, 205, 30, 30);
   image(eraser, 5, 205, 30, 30);
+  
+  /*layer*/
+  //layer
+  strokeWeight(1);
+  stroke(0);
+  fill(100);
+  rect(830,680,40,20);
+  String layer;
+  layer = "Layer";
+  textSize(14);
+  fill(0);
+  text(layer, 833, 695);
+  
+  //image layer
+  fill(200);
+  rect(800, 700, 100, 50);
+  String imageLayer;
+  imageLayer = "Image";
+  textSize(20);
+  fill(0);
+  text(imageLayer, 820, 730);
+  
+  //painting layer
+  fill(200);
+  rect(800, 750, 100, 50);
+  String paintingLayer;
+  paintingLayer = "Painting";
+  textSize(20);
+  fill(0);
+  text(paintingLayer, 815, 780);
+  
+  /*logo*/
+  PFont logoFont;
+  logoFont = loadFont("Gigi-Regular-48.vlw");
+  textFont(logoFont, 30);
+  fill(255,255,0);
+  String myLogo;
+  myLogo = "Hooni Photoshop";
+  text(myLogo,1250,30);
+  
+  simpleFont();
 }
 
 void draw() {
   
+  //layer
+  if (currentLayer == 1) {
+    pg1.beginDraw();
+    pg1.endDraw();
+  }
+  else if (currentLayer == 2) {
+    pg2.beginDraw();
+    pg2.endDraw();
+  }
   //save button
   if(saveFile==1) {
     stroke(1);
@@ -146,7 +213,7 @@ void draw() {
     String OK;
     fill(0);
     OK = "SAVE";
-    text(OK, 782, 565);
+    text(OK, 785, 565);
     
     //quit button
     if(mousePressed && 980<=mouseX && mouseX<=1000 && 400<=mouseY && mouseY<=420) {
@@ -212,7 +279,7 @@ void draw() {
     setup();
     PImage loadImage;
     loadImage = loadImage(str);
-    image(loadImage, 200, 200);
+    image(loadImage, 300, 300, 300, 300);
   }
   
   //color button
@@ -235,7 +302,7 @@ void draw() {
   
   //brush
   if(mode==1) {
-    strokeWeight(bolding);
+    //strokeWeight(bolding);
     stroke(clr);
   }
   
@@ -323,8 +390,16 @@ void mouseReleased() {
     bolding--;
   }
   
+  //brightness
+  if(585<=mouseX && mouseX<=605 && 10<=mouseY && mouseY<=30) {
+    brighting++;
+  }
+  if(610<=mouseX && mouseX<=630 && 10<=mouseY && mouseY<=30) {
+    brighting--;
+  }
+  
   //mode
-  if(5<=mouseX && mouseX<=35 && 45<=mouseX && mouseX<=75) {
+  if(5<=mouseX && mouseX<=35 && 45<=mouseY && mouseY<=75) {
     //pencil
     mode=0;
   }
@@ -343,6 +418,14 @@ void mouseReleased() {
   if(5<=mouseX && mouseX<=35 && 205<=mouseY && mouseY<=235) {
     //eraser
     mode=4;
+  }
+  
+  //layer
+  if(800<=mouseX && mouseX<=900 && 700<=mouseY && 750<=mouseY) {
+    currentLayer = 1;
+  }
+  if(800<=mouseX && mouseX<=900 && 750<=mouseY && 800<=mouseY) {
+    currentLayer = 2;
   }
 }
 
@@ -374,7 +457,13 @@ void mouseClicked() {
 
 void mouseDragged() {
   if (200<=mouseX && mouseX<=700 && 200<mouseY && mouseY<=900) {
-    line(pmouseX, pmouseY, mouseX, mouseY);
+    if(mode==1) {
+      for(int i=0; i<10; i++) {
+        ellipse(mouseX+random(-bolding*5,bolding*5), mouseY+random(-bolding*5,bolding*5),5,5);
+      }
+    }
+    else
+      line(pmouseX, pmouseY, mouseX, mouseY);
   }
 }
 
@@ -391,6 +480,12 @@ void minusButton(int x, int y, int r) {
   strokeWeight(1);
   circle(x,y,r);
   line(x+r/4, y, x-r/4, y);
+}
+
+void simpleFont() {
+  PFont font;
+  font = loadFont("regular.vlw");
+  textFont(font, 12);
 }
 
 public class ColorPicker 
